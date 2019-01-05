@@ -31,7 +31,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
  * project.
  */
 public class Robot extends TimedRobot {
-	public static final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
+	public static final DrivetrainSubsystem drivetrainSubsystem 
+		= new DrivetrainSubsystem();
 	public static OI oi;
 
 	Command autonomousCommand = new DriveForwardCommand();
@@ -59,14 +60,14 @@ public class Robot extends TimedRobot {
 //		RobotMap.frontLeftMotor.setNeutralMode(NeutralMode.Brake);
 //		RobotMap.backLeftMotor.setNeutralMode(NeutralMode.Brake);
 //		
-//		RobotMap.frontRightMotor
-//			.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 0);
-//		RobotMap.frontLeftMotor
-//			.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 0);
-//		
-//		RobotMap.frontRightMotor.setSelectedSensorPosition(0, 0, 0);
-//		RobotMap.frontLeftMotor.setSelectedSensorPosition(0, 0, 0);
-//		
+		RobotMap.frontRightMotor.configSelectedFeedbackSensor(
+			FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 0);
+		RobotMap.frontLeftMotor.configSelectedFeedbackSensor(
+			FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 0);
+		
+		RobotMap.frontRightMotor.setSelectedSensorPosition(0, 0, 0);
+		RobotMap.frontLeftMotor.setSelectedSensorPosition(0, 0, 0);
+		
 		 RobotMap.frontRightMotor.configNominalOutputForward(0, 0);
 		 RobotMap.frontRightMotor.configNominalOutputReverse(0, 0);
 		 RobotMap.frontRightMotor.configPeakOutputForward(1, 0);
@@ -197,8 +198,12 @@ public class Robot extends TimedRobot {
 		Scheduler.getInstance().run();
 		RobotMap.backRightMotor.set(ControlMode.PercentOutput, 0.2);
 		RobotMap.backLeftMotor.set(ControlMode.PercentOutput, 0.2);
-		System.out.printf("right: front: %s; back: %s\n", RobotMap.frontRightMotor.getOutputCurrent(), RobotMap.backRightMotor.getOutputCurrent());
-		System.out.printf("left : front: %s; back: %s\n", RobotMap.frontLeftMotor.getOutputCurrent(), RobotMap.backLeftMotor.getOutputCurrent());
+		System.out.printf("right: front: %s; back: %s\n",
+		 	RobotMap.frontRightMotor.getOutputCurrent(),
+		  	RobotMap.backRightMotor.getOutputCurrent());
+		System.out.printf("left : front: %s; back: %s\n",
+			RobotMap.frontLeftMotor.getOutputCurrent(),
+			RobotMap.backLeftMotor.getOutputCurrent());
 
 		
 //		System.out.println(elevator);
