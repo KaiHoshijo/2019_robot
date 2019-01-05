@@ -95,8 +95,10 @@ public class Robot extends TimedRobot {
 		RobotMap.frontLeftMotor.setInverted(false);
 		RobotMap.backRightMotor.setInverted(true);
 		
-//		RobotMap.backLeftMotor.set(ControlMode.Follower, 3);
-//		RobotMap.backRightMotor.set(ControlMode.Follower, 1);
+		RobotMap.backLeftMotor.set(
+			ControlMode.Follower, RobotMap.frontLeftMotorID);
+		RobotMap.backRightMotor.set(
+			ControlMode.Follower, RobotMap.frontRightMotorID);
 
 //		RobotMap.masterElevatorMotor.configPeakOutputForward(0.78, 0);
 //    	RobotMap.masterElevatorMotor.configPeakOutputReverse(0, 0);
@@ -149,8 +151,10 @@ public class Robot extends TimedRobot {
 		
 //		driveForwardAndBackward.start();
 		
-		RobotMap.backLeftMotor.set(ControlMode.Follower, 3);
-		RobotMap.backRightMotor.set(ControlMode.Follower, 1);
+		RobotMap.backLeftMotor.set(
+			ControlMode.Follower, RobotMap.frontLeftMotorID);
+		RobotMap.backRightMotor.set(
+			ControlMode.Follower, RobotMap.frontRightMotorID);
 		
 		RobotMap.frontRightMotor.setSelectedSensorPosition(0, 0, 0);
 		RobotMap.frontLeftMotor.setSelectedSensorPosition(0, 0, 0);
@@ -186,8 +190,10 @@ public class Robot extends TimedRobot {
 		}
 		
 		// drivingCommand.start();
-		RobotMap.frontLeftMotor.set(ControlMode.Follower, 4);
-		RobotMap.frontRightMotor.set(ControlMode.Follower, 2);
+		RobotMap.backLeftMotor.set(
+			ControlMode.Follower, RobotMap.frontLeftMotorID);
+		RobotMap.backRightMotor.set(
+			ControlMode.Follower, RobotMap.frontRightMotorID);
 	}
 
 	/**
@@ -204,25 +210,6 @@ public class Robot extends TimedRobot {
 		System.out.printf("left : front: %s; back: %s\n",
 			RobotMap.frontLeftMotor.getOutputCurrent(),
 			RobotMap.backLeftMotor.getOutputCurrent());
-
-		
-//		System.out.println(elevator);
-//		if (elevator < 0) elevator = 0;
-//		System.out.println(elevator);
-//		RobotMap.masterElevatorMotor.set(ControlMode.PercentOutput, elevator);
-//		RobotMap.slaveElevatorMotor.set(ControlMode.Follower, RobotMap.masterElevatorMotor.getDeviceID());
-		
-		
-//		if (OI.intake.get()) {
-//			RobotMap.rightIntakeMotor.set(ControlMode.PercentOutput, -1);
-//			RobotMap.leftIntakeMotor.set(ControlMode.PercentOutput, -1);
-//		} else if (OI.outtake.get()) {
-//			RobotMap.rightIntakeMotor.set(ControlMode.PercentOutput, 1);
-//			RobotMap.leftIntakeMotor.set(ControlMode.PercentOutput, 1);
-//		} else {
-//			RobotMap.rightIntakeMotor.set(ControlMode.PercentOutput, 0);
-//			RobotMap.leftIntakeMotor.set(ControlMode.PercentOutput, 0);
-//		}
 	}
 
 	/**

@@ -30,8 +30,10 @@ public class DrivingCommand extends Command {
     protected void initialize() {
     	RobotMap.frontRightMotor.set(ControlMode.PercentOutput, 0);
     	RobotMap.frontLeftMotor.set(ControlMode.PercentOutput, 0);
-    	RobotMap.backRightMotor.set(ControlMode.Follower, 1);
-    	RobotMap.backLeftMotor.set(ControlMode.Follower, 3);
+    	RobotMap.backRightMotor.set(
+            ControlMode.Follower, RobotMap.frontRightMotorID);
+    	RobotMap.backLeftMotor.set(
+            ControlMode.Follower, RobotMap.frontLeftMotorID);
     }
 
     // Called repeatedly when this Command is scheduled to run
