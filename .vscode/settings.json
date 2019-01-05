@@ -14,5 +14,6 @@
   "editor.rulers": [
     80
   ],
-  "editor.fontSize": 18
+  "editor.fontSize": 18,
+  "git.autofetch": true
 }
