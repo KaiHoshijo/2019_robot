@@ -38,31 +38,31 @@ public class DrivingCommand extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	RobotMap.frontRightMotor.set(ControlMode.PercentOutput, 0.5);
-    }
-//    	double driveSpeedCoeff = 0.35;
-//		double y = OI.drive.getRawAxis(1) * driveSpeedCoeff;
-//		double x = OI.drive.getRawAxis(0) * driveSpeedCoeff;
-//
-//		if (y < 0.1 && y > -0.1) {
-//			y = 0;
-//		}
-//		
-//		if ( x < 0.1 && x > -0.1) {
-//			x = 0;
-//		}
-//		
-//		RobotMap.frontLeftMotor.set(ControlMode.PercentOutput, y + x);
-//		RobotMap.frontRightMotor.set(ControlMode.PercentOutput, -y + x);
-//		
-//		System.out.printf("y: %s; x: %s\n", y, x);
-//		
-//		System.out.printf("Left out: %s; Right out: %s; Left Pos: %s; Right Pos: %s\n",
-//				RobotMap.frontLeftMotor.getOutputCurrent(),
-//				RobotMap.frontRightMotor.getOutputCurrent(),
-//				RobotMap.frontLeftMotor.getSelectedSensorPosition(0),
-//				RobotMap.frontRightMotor.getSelectedSensorPosition(0));
-//    }
+    // 	RobotMap.frontRightMotor.set(ControlMode.PercentOutput, 0.5);
+    // }
+   	double driveSpeedCoeff = 0.35;
+		double y = OI.drive.getRawAxis(1) * driveSpeedCoeff;
+		double x = OI.drive.getRawAxis(0) * driveSpeedCoeff;
+
+		if (y < 0.1 && y > -0.1) {
+			y = 0;
+		}
+		
+		if ( x < 0.1 && x > -0.1) {
+			x = 0;
+		}
+		
+		RobotMap.frontLeftMotor.set(ControlMode.PercentOutput, -y + x);
+		RobotMap.frontRightMotor.set(ControlMode.PercentOutput, -y - x);
+		
+		System.out.printf("y: %s; x: %s\n", y, x);
+		
+		System.out.printf("Left out: %s; Right out: %s; Left Pos: %s; Right Pos: %s\n",
+				RobotMap.frontLeftMotor.getOutputCurrent(),
+				RobotMap.frontRightMotor.getOutputCurrent(),
+				RobotMap.frontLeftMotor.getSelectedSensorPosition(0),
+				RobotMap.frontRightMotor.getSelectedSensorPosition(0));
+   }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {

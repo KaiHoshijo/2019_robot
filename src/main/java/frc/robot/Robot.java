@@ -13,11 +13,14 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import frc.robot.commands.AlignTargetCommand;
+import frc.robot.commands.ClimbingCommand;
 import frc.robot.commands.DriveForwardAndBackwardGroup;
 import frc.robot.commands.DriveForwardCommand;
 import frc.robot.commands.DrivingCommand;
+import frc.robot.commands.LeadScrewDrivingCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.LimelightSystem;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -33,11 +36,15 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 public class Robot extends TimedRobot {
 	public static final DrivetrainSubsystem drivetrainSubsystem 
 		= new DrivetrainSubsystem();
+	public static final LimelightSystem limelightSystem
+		= new LimelightSystem();
 	public static OI oi;
 
-	Command autonomousCommand = new DriveForwardCommand();
+	Command autonomousCommand = new AlignTargetCommand();
 	CommandGroup driveForwardAndBackward = new DriveForwardAndBackwardGroup();
 	Command drivingCommand = new DrivingCommand();
+	Command climbingCommand = new ClimbingCommand();
+	Command leadScrewCommand = new LeadScrewDrivingCommand();
 	SendableChooser<Command> chooser = new SendableChooser<>();
 
 	/**
@@ -92,13 +99,17 @@ public class Robot extends TimedRobot {
 		RobotMap.frontLeftMotor.setSensorPhase(true);
 		
 		RobotMap.frontRightMotor.setInverted(true);
-		RobotMap.frontLeftMotor.setInverted(false);
 		RobotMap.backRightMotor.setInverted(true);
+		RobotMap.frontLeftMotor.setInverted(false);
+		RobotMap.backLeftMotor.setInverted(false);
 		
 		RobotMap.backLeftMotor.set(
 			ControlMode.Follower, RobotMap.frontLeftMotorID);
 		RobotMap.backRightMotor.set(
 			ControlMode.Follower, RobotMap.frontRightMotorID);
+
+		RobotMap.leftClimbingMotor.setNeutralMode(NeutralMode.Coast);
+		RobotMap.rightClimbingMotor.setNeutralMode(NeutralMode.Coast);
 
 //		RobotMap.masterElevatorMotor.configPeakOutputForward(0.78, 0);
 //    	RobotMap.masterElevatorMotor.configPeakOutputReverse(0, 0);
@@ -149,7 +160,8 @@ public class Robot extends TimedRobot {
 
 		// schedule the autonomous command (example)
 		
-//		driveForwardAndBackward.start();
+		System.out.println("Enabling command");
+		autonomousCommand.start();
 		
 		RobotMap.backLeftMotor.set(
 			ControlMode.Follower, RobotMap.frontLeftMotorID);
@@ -166,17 +178,15 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		/*
+		
 		Scheduler.getInstance().run();
-		RobotMap.frontLeftMotor.set(ControlMode.Position, 500);
-		RobotMap.frontRightMotor.set(ControlMode.Position, 500);
-		System.out.printf("Left out: %s; Right out: %s; Left Err: %s; Right Err: %s\n",
-				RobotMap.frontLeftMotor.getOutputCurrent(),
-				RobotMap.frontRightMotor.getOutputCurrent(),
-				RobotMap.frontLeftMotor.getClosedLoopError(0),
-				RobotMap.frontRightMotor.getClosedLoopError(0));*/
-		RobotMap.frontRightMotor.set(ControlMode.PercentOutput, -0.5);
-		System.out.println(RobotMap.frontRightMotor.getOutputCurrent());
+		// RobotMap.frontLeftMotor.set(ControlMode.Position, 500);
+		// RobotMap.frontRightMotor.set(ControlMode.Position, 500);
+		// System.out.printf("Left out: %s; Right out: %s; Left Err: %s; Right Err: %s\n",
+		// 		RobotMap.frontLeftMotor.getOutputCurrent(),
+		// 		RobotMap.frontRightMotor.getOutputCurrent(),
+		// 		RobotMap.frontLeftMotor.getClosedLoopError(0),
+		// 		RobotMap.frontRightMotor.getClosedLoopError(0));
 	}
 
 	@Override
@@ -188,12 +198,15 @@ public class Robot extends TimedRobot {
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
-		
-		// drivingCommand.start();
+
 		RobotMap.backLeftMotor.set(
 			ControlMode.Follower, RobotMap.frontLeftMotorID);
 		RobotMap.backRightMotor.set(
 			ControlMode.Follower, RobotMap.frontRightMotorID);
+		
+		drivingCommand.start();
+		// climbingCommand.start();
+		// leadScrewCommand.start();
 	}
 
 	/**
@@ -202,14 +215,14 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
-		RobotMap.backRightMotor.set(ControlMode.PercentOutput, 0.2);
-		RobotMap.backLeftMotor.set(ControlMode.PercentOutput, 0.2);
-		System.out.printf("right: front: %s; back: %s\n",
-		 	RobotMap.frontRightMotor.getOutputCurrent(),
-		  	RobotMap.backRightMotor.getOutputCurrent());
-		System.out.printf("left : front: %s; back: %s\n",
-			RobotMap.frontLeftMotor.getOutputCurrent(),
-			RobotMap.backLeftMotor.getOutputCurrent());
+		// RobotMap.backRightMotor.set(ControlMode.PercentOutput, 0.2);
+		// RobotMap.backLeftMotor.set(ControlMode.PercentOutput, 0.2);
+		// System.out.printf("right: front: %s; back: %s\n",
+		//  	RobotMap.frontRightMotor.getOutputCurrent(),
+		//   	RobotMap.backRightMotor.getOutputCurrent());
+		// System.out.printf("left : front: %s; back: %s\n",
+		// 	RobotMap.frontLeftMotor.getOutputCurrent(),
+		// 	RobotMap.backLeftMotor.getOutputCurrent());
 	}
 
 	/**

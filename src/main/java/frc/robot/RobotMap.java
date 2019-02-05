@@ -26,13 +26,25 @@ public class RobotMap {
 	// public static int rangefinderPort = 1;
 	// public static int rangefinderModule = 1;
 
-	public static final int frontRightMotorID = 1;
-	public static final int backRightMotorID = 2;
-	public static final int frontLeftMotorID = 3;
-	public static final int backLeftMotorID = 4;
+	public static final int frontRightMotorID = 5;
+	public static final int backRightMotorID = 3;
+	public static final int frontLeftMotorID = 1;
+	public static final int backLeftMotorID = 2;
+	public static final int leftClimbingID = 9;
+	public static final int rightClimbingID = 10;
+	public static final int leadScrewMotorID = 11;
 
 	public static TalonSRX frontRightMotor = new TalonSRX(frontRightMotorID);
 	public static TalonSRX backRightMotor = new TalonSRX(backRightMotorID);
 	public static TalonSRX frontLeftMotor = new TalonSRX(frontLeftMotorID);
 	public static TalonSRX backLeftMotor = new TalonSRX(backLeftMotorID);
+
+	public static TalonSRX leftClimbingMotor = new TalonSRX(leftClimbingID);
+	public static TalonSRX rightClimbingMotor = new TalonSRX(rightClimbingID);
+
+	public static TalonSRX leadScrewMotor = new TalonSRX(leadScrewMotorID);
+
+	public static final double limelightAngle = 0.6;
+	public static final double limelightHeight = 0.5;
+	public static final double targetHeight = 38.43645499d;
 }
