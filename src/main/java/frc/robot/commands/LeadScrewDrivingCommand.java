@@ -13,6 +13,9 @@ import frc.robot.RobotMap;
 import frc.robot.OI;
 
 public class LeadScrewDrivingCommand extends Command {
+  private static final double lowPosition = 0;
+  private static final double highPosition = 1000; // FIXME
+
   public LeadScrewDrivingCommand() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
@@ -22,19 +25,16 @@ public class LeadScrewDrivingCommand extends Command {
   @Override
   protected void initialize() {
     RobotMap.leadScrewMotor.set(ControlMode.PercentOutput, 0);
-    }
+  }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if (OI.drive.getRawButton(6)) {
-      // Lower elevator
-      RobotMap.leadScrewMotor.set(ControlMode.PercentOutput, 0.3);
-    } else if (OI.drive.getRawButton(5)) {
-      // Raise elevator
-      RobotMap.leadScrewMotor.set(ControlMode.PercentOutput, -0.3);
+    if (OI.arms.getRawButton(6)) {
+      // Raise arms
+      RobotMap.leadScrewMotor.set(ControlMode.Position, highPosition);
     } else {
-      RobotMap.leadScrewMotor.set(ControlMode.PercentOutput, 0);
+      RobotMap.leadScrewMotor.set(ControlMode.Position, lowPosition);
     }
   }
 

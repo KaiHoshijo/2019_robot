@@ -26,13 +26,18 @@ public class RobotMap {
 	// public static int rangefinderPort = 1;
 	// public static int rangefinderModule = 1;
 
-	public static final int frontRightMotorID = 5;
-	public static final int backRightMotorID = 3;
-	public static final int frontLeftMotorID = 1;
-	public static final int backLeftMotorID = 2;
-	public static final int leftClimbingID = 9;
-	public static final int rightClimbingID = 10;
-	public static final int leadScrewMotorID = 11;
+	public static final int frontRightMotorID = 14;
+	public static final int backRightMotorID = 9;
+	public static final int frontLeftMotorID = 4;
+	public static final int backLeftMotorID = 8;
+
+	public static final int leftClimbingID = 6;
+	public static final int rightClimbingID = 2;
+
+	public static final int leadScrewMotorID = 7;
+
+	public static final int rightIntakeMotorID = 3;
+	public static final int leftIntakeMotorID = 10;
 
 	public static TalonSRX frontRightMotor = new TalonSRX(frontRightMotorID);
 	public static TalonSRX backRightMotor = new TalonSRX(backRightMotorID);
@@ -44,7 +49,16 @@ public class RobotMap {
 
 	public static TalonSRX leadScrewMotor = new TalonSRX(leadScrewMotorID);
 
-	public static final double limelightAngle = 0.6;
+	public static TalonSRX rightIntakeMotor = new TalonSRX(rightIntakeMotorID);
+	public static TalonSRX leftIntakeMotor = new TalonSRX(leftIntakeMotorID);
+
+	public static final double limelightAngle = 0.4596396144303d;
 	public static final double limelightHeight = 0.5;
-	public static final double targetHeight = 38.43645499d;
+	// public static final double targetHeight = 38.43645499d;
+	public static final double targetHeight = 34.5d;
+
+	public static final double crosshairYAngle = 0.283616d;
+
+	public static final double drivetrainEncoderTicksPerRev = 4096;
+	public static final double drivetrainGearRatio = 1.0 / 1.0; // FIXME
 }

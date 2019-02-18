@@ -42,5 +42,6 @@ public class OI {
 	// until it is finished as determined by it's isFinished method.
 	// button.whenReleased(new ExampleCommand());
 	
-	public static Joystick drive = new Joystick(0);
+	public static final Joystick drive = new Joystick(0);
+	public static final Joystick arms = new Joystick(1);
 }

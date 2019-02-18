@@ -7,6 +7,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
@@ -16,7 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AlignTargetCommand;
 import frc.robot.commands.ClimbingCommand;
 import frc.robot.commands.DriveForwardAndBackwardGroup;
-import frc.robot.commands.DriveForwardCommand;
 import frc.robot.commands.DrivingCommand;
 import frc.robot.commands.LeadScrewDrivingCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -34,6 +36,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
  * project.
  */
 public class Robot extends TimedRobot {
+	private static final double LED_OFF = 1;
+	private static final double LED_ON = 3;
+
 	public static final DrivetrainSubsystem drivetrainSubsystem 
 		= new DrivetrainSubsystem();
 	public static final LimelightSystem limelightSystem
@@ -47,74 +52,116 @@ public class Robot extends TimedRobot {
 	Command leadScrewCommand = new LeadScrewDrivingCommand();
 	SendableChooser<Command> chooser = new SendableChooser<>();
 
+	NetworkTableEntry limelightLED;
+
 	/**
 	 * This function is run when the robot is first started up and should be used
 	 * for any initialization code.
 	 */
-	@Override
+
 	public void robotInit() {
 		oi = new OI();
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
-		
+
 //		RobotMap.frontRightMotor.configOpenloopRamp(1, 0);
 //		RobotMap.backRightMotor.configOpenloopRamp(1, 0);
 //		RobotMap.frontLeftMotor.configOpenloopRamp(1, 0);
 //		RobotMap.backLeftMotor.configOpenloopRamp(1, 0);
 //		
-//		RobotMap.frontRightMotor.setNeutralMode(NeutralMode.Brake);
-//		RobotMap.backRightMotor.setNeutralMode(NeutralMode.Brake);
-//		RobotMap.frontLeftMotor.setNeutralMode(NeutralMode.Brake);
-//		RobotMap.backLeftMotor.setNeutralMode(NeutralMode.Brake);
-//		
+		RobotMap.frontRightMotor.setNeutralMode(NeutralMode.Coast);
+		RobotMap.backRightMotor.setNeutralMode(NeutralMode.Coast);
+		RobotMap.frontLeftMotor.setNeutralMode(NeutralMode.Coast);
+		RobotMap.backLeftMotor.setNeutralMode(NeutralMode.Coast);
+		RobotMap.leftClimbingMotor.setNeutralMode(NeutralMode.Coast);
+		RobotMap.rightClimbingMotor.setNeutralMode(NeutralMode.Coast);
+		RobotMap.leadScrewMotor.setNeutralMode(NeutralMode.Coast);
+
 		RobotMap.frontRightMotor.configSelectedFeedbackSensor(
 			FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 0);
 		RobotMap.frontLeftMotor.configSelectedFeedbackSensor(
 			FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 0);
-		
+		RobotMap.rightClimbingMotor.configSelectedFeedbackSensor(
+			FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 0);
+		RobotMap.leftClimbingMotor.configSelectedFeedbackSensor(
+			FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 0);
+		RobotMap.leadScrewMotor.configSelectedFeedbackSensor(
+			FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 0);
+
 		RobotMap.frontRightMotor.setSelectedSensorPosition(0, 0, 0);
 		RobotMap.frontLeftMotor.setSelectedSensorPosition(0, 0, 0);
+		RobotMap.leftClimbingMotor.setSelectedSensorPosition(0, 0, 0);
+		RobotMap.rightClimbingMotor.setSelectedSensorPosition(0, 0, 0);
+
+		RobotMap.frontRightMotor.configNominalOutputForward(0, 0);
+		RobotMap.frontRightMotor.configNominalOutputReverse(0, 0);
+		RobotMap.frontRightMotor.configPeakOutputForward(1, 0);
+		RobotMap.frontRightMotor.configPeakOutputReverse(-1, 0);
 		
-		 RobotMap.frontRightMotor.configNominalOutputForward(0, 0);
-		 RobotMap.frontRightMotor.configNominalOutputReverse(0, 0);
-		 RobotMap.frontRightMotor.configPeakOutputForward(1, 0);
-		 RobotMap.frontRightMotor.configPeakOutputReverse(-1, 0);
-		 
-		 RobotMap.frontLeftMotor.configNominalOutputForward(0, 0);
-		 RobotMap.frontLeftMotor.configNominalOutputReverse(0, 0);
-		 RobotMap.frontLeftMotor.configPeakOutputForward(1, 0);
-		 RobotMap.frontLeftMotor.configPeakOutputReverse(-1, 0);
-		 
-		 RobotMap.frontRightMotor.config_kF(0, 0.5, 0);
-		 RobotMap.frontRightMotor.config_kP(0, 1, 0);
-		 RobotMap.frontRightMotor.config_kI(0, 0, 0);
-		 RobotMap.frontRightMotor.config_kD(0, 0, 0);
-		 
-		 RobotMap.frontLeftMotor.config_kF(0, 0.0, 0);
-		 RobotMap.frontLeftMotor.config_kP(0, 1, 0);
-		 RobotMap.frontLeftMotor.config_kI(0, 0, 0);
-		 RobotMap.frontLeftMotor.config_kD(0, 0, 0);
-			
+		RobotMap.frontLeftMotor.configNominalOutputForward(0, 0);
+		RobotMap.frontLeftMotor.configNominalOutputReverse(0, 0);
+		RobotMap.frontLeftMotor.configPeakOutputForward(1, 0);
+		RobotMap.frontLeftMotor.configPeakOutputReverse(-1, 0);
+
+		RobotMap.rightClimbingMotor.configNominalOutputForward(0, 0);
+		RobotMap.rightClimbingMotor.configNominalOutputReverse(0, 0);
+		RobotMap.rightClimbingMotor.configPeakOutputForward(1, 0);
+		RobotMap.rightClimbingMotor.configPeakOutputReverse(-1, 0);
+		
+		RobotMap.leftClimbingMotor.configNominalOutputForward(0, 0);
+		RobotMap.leftClimbingMotor.configNominalOutputReverse(0, 0);
+		RobotMap.leftClimbingMotor.configPeakOutputForward(1, 0);
+		RobotMap.leftClimbingMotor.configPeakOutputReverse(-1, 0);
+
+		// FIXME
+		RobotMap.frontRightMotor.config_kF(0, 0.5, 0);
+		RobotMap.frontRightMotor.config_kP(0, 1, 0);
+		RobotMap.frontRightMotor.config_kI(0, 0, 0);
+		RobotMap.frontRightMotor.config_kD(0, 0, 0);
+
+		RobotMap.frontLeftMotor.config_kF(0, 0.0, 0);
+		RobotMap.frontLeftMotor.config_kP(0, 1, 0);
+		RobotMap.frontLeftMotor.config_kI(0, 0, 0);
+		RobotMap.frontLeftMotor.config_kD(0, 0, 0);
+
+		RobotMap.rightClimbingMotor.config_kF(0, 0.5, 0);
+		RobotMap.rightClimbingMotor.config_kP(0, 1, 0);
+		RobotMap.rightClimbingMotor.config_kI(0, 0, 0);
+		RobotMap.rightClimbingMotor.config_kD(0, 0, 0);
+
+		RobotMap.leftClimbingMotor.config_kF(0, 0.0, 0);
+		RobotMap.leftClimbingMotor.config_kP(0, 1, 0);
+		RobotMap.leftClimbingMotor.config_kI(0, 0, 0);
+		RobotMap.leftClimbingMotor.config_kD(0, 0, 0);
+
 		RobotMap.frontRightMotor.setSensorPhase(false);
 		RobotMap.frontLeftMotor.setSensorPhase(true);
-		
+
+		RobotMap.rightClimbingMotor.setSensorPhase(false);
+		RobotMap.leftClimbingMotor.setSensorPhase(true);
+
 		RobotMap.frontRightMotor.setInverted(true);
 		RobotMap.backRightMotor.setInverted(true);
 		RobotMap.frontLeftMotor.setInverted(false);
 		RobotMap.backLeftMotor.setInverted(false);
+		RobotMap.rightClimbingMotor.setInverted(true);
+		RobotMap.leftClimbingMotor.setInverted(false);
 		
 		RobotMap.backLeftMotor.set(
 			ControlMode.Follower, RobotMap.frontLeftMotorID);
 		RobotMap.backRightMotor.set(
 			ControlMode.Follower, RobotMap.frontRightMotorID);
-
-		RobotMap.leftClimbingMotor.setNeutralMode(NeutralMode.Coast);
-		RobotMap.rightClimbingMotor.setNeutralMode(NeutralMode.Coast);
+		RobotMap.leftClimbingMotor.set(
+			ControlMode.Follower, RobotMap.rightClimbingID);
 
 //		RobotMap.masterElevatorMotor.configPeakOutputForward(0.78, 0);
 //    	RobotMap.masterElevatorMotor.configPeakOutputReverse(0, 0);
 //    	RobotMap.masterElevatorMotor.setNeutralMode(NeutralMode.Brake);
 //		RobotMap.slaveElevatorMotor.setNeutralMode(NeutralMode.Brake);
+
+		NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+
+		this.limelightLED = table.getEntry("ledMode");
 	}
 
 	/**
@@ -122,16 +169,23 @@ public class Robot extends TimedRobot {
 	 * can use it to reset any subsystem information you want to clear when the
 	 * robot is disabled.
 	 */
-	@Override
+	
 	public void disabledInit() {
 		drivingCommand.cancel();
+		RobotMap.frontLeftMotor.set(ControlMode.PercentOutput, 0);
+		RobotMap.frontRightMotor.set(ControlMode.PercentOutput, 0);
 		RobotMap.frontRightMotor.setNeutralMode(NeutralMode.Coast);
 		RobotMap.backRightMotor.setNeutralMode(NeutralMode.Coast);
 		RobotMap.frontLeftMotor.setNeutralMode(NeutralMode.Coast);
 		RobotMap.backLeftMotor.setNeutralMode(NeutralMode.Coast);
+		RobotMap.rightClimbingMotor.setNeutralMode(NeutralMode.Coast);
+		RobotMap.leftClimbingMotor.setNeutralMode(NeutralMode.Coast);
+		RobotMap.leadScrewMotor.setNeutralMode(NeutralMode.Coast);
+
+		this.limelightLED.setNumber(LED_OFF);
 	}
 
-	@Override
+	
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
 	}
@@ -148,7 +202,7 @@ public class Robot extends TimedRobot {
 	 * chooser code above (like the commented example) or additional comparisons to
 	 * the switch structure below with additional strings & commands.
 	 */
-	@Override
+	
 	public void autonomousInit() {
 
 		/*
@@ -157,12 +211,14 @@ public class Robot extends TimedRobot {
 		 * MyAutoCommand(); break; case "Default Auto": default: autonomousCommand = new
 		 * ExampleCommand(); break; }
 		 */
+		RobotMap.frontLeftMotor.setNeutralMode(NeutralMode.Brake);
+		RobotMap.frontRightMotor.setNeutralMode(NeutralMode.Brake);
+		RobotMap.backLeftMotor.setNeutralMode(NeutralMode.Brake);
+		RobotMap.backRightMotor.setNeutralMode(NeutralMode.Brake);
+		RobotMap.rightClimbingMotor.setNeutralMode(NeutralMode.Brake);
+		RobotMap.leftClimbingMotor.setNeutralMode(NeutralMode.Brake);
+		RobotMap.leadScrewMotor.setNeutralMode(NeutralMode.Brake);
 
-		// schedule the autonomous command (example)
-		
-		System.out.println("Enabling command");
-		autonomousCommand.start();
-		
 		RobotMap.backLeftMotor.set(
 			ControlMode.Follower, RobotMap.frontLeftMotorID);
 		RobotMap.backRightMotor.set(
@@ -171,12 +227,15 @@ public class Robot extends TimedRobot {
 		RobotMap.frontRightMotor.setSelectedSensorPosition(0, 0, 0);
 		RobotMap.frontLeftMotor.setSelectedSensorPosition(0, 0, 0);
 
+		this.limelightLED.setNumber(LED_ON);
+
+		autonomousCommand.start();
 	}
 
 	/**
 	 * This function is called periodically during autonomous.
 	 */
-	@Override
+	
 	public void autonomousPeriodic() {
 		
 		Scheduler.getInstance().run();
@@ -189,7 +248,7 @@ public class Robot extends TimedRobot {
 		// 		RobotMap.frontRightMotor.getClosedLoopError(0));
 	}
 
-	@Override
+
 	public void teleopInit() {
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
@@ -199,11 +258,18 @@ public class Robot extends TimedRobot {
 			autonomousCommand.cancel();
 		}
 
+		RobotMap.frontLeftMotor.setNeutralMode(NeutralMode.Brake);
+		RobotMap.frontRightMotor.setNeutralMode(NeutralMode.Brake);
+		RobotMap.backLeftMotor.setNeutralMode(NeutralMode.Brake);
+		RobotMap.backRightMotor.setNeutralMode(NeutralMode.Brake);
+
 		RobotMap.backLeftMotor.set(
 			ControlMode.Follower, RobotMap.frontLeftMotorID);
 		RobotMap.backRightMotor.set(
 			ControlMode.Follower, RobotMap.frontRightMotorID);
-		
+			
+		this.limelightLED.setNumber(LED_ON);
+
 		drivingCommand.start();
 		// climbingCommand.start();
 		// leadScrewCommand.start();
@@ -212,7 +278,7 @@ public class Robot extends TimedRobot {
 	/**
 	 * This function is called periodically during operator control.
 	 */
-	@Override
+
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		// RobotMap.backRightMotor.set(ControlMode.PercentOutput, 0.2);
@@ -228,7 +294,7 @@ public class Robot extends TimedRobot {
 	/**
 	 * This function is called periodically during test mode.
 	 */
-	@Override
+
 	public void testPeriodic() {
 	}
 }

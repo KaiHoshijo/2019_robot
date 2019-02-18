@@ -22,12 +22,18 @@ import frc.robot.tools.Contour;
 import frc.robot.tools.PID;
 import frc.robot.tools.Point;
 
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+import static java.lang.Math.tan;
+import static java.lang.Math.atan2;
+
 
 public class AlignTargetCommand extends Command {
 
   NetworkTableEntry valid;
   NetworkTableEntry xOffset;
   NetworkTableEntry yOffset;
+  NetworkTableEntry skew;
   // NetworkTableEntry centerX;
 
   PID xControlLoop;
@@ -49,21 +55,21 @@ public class AlignTargetCommand extends Command {
     this.xOffset = table.getEntry("tx");
     this.yOffset = table.getEntry("ty");
     // this.area = table.getEntry("ta");
-    // this.skew = table.getEntry("ts");
+    this.skew = table.getEntry("ts");
     // NetworkTable table = NetworkTableInstance.getDefault().getTable("targetContours");
     // this.centerX = table.getEntry("centerX");
 
-    this.xControlLoop = new PID(0.01, 0, 0, Double.MAX_VALUE);
+    this.xControlLoop = new PID(0.05, 0.0002, 0, 5);
 
     this.xControlLoop.setSetPoint(0);
-
     this.xControlLoop.setDeadband(1);
+    this.xControlLoop.setThreshold(0.05);
 
-    this.yControlLoop = new PID(0.02, 0.000, 0, 5);
+    this.yControlLoop = new PID(0.025, 0.000, 0, 5);
 
     this.yControlLoop.setSetPoint(0);
-
     this.yControlLoop.setDeadband(1);
+    this.yControlLoop.setThreshold(0.05);
 
     RobotMap.backRightMotor.set(ControlMode.Follower, RobotMap.frontRightMotorID);
     RobotMap.backLeftMotor.set(ControlMode.Follower, RobotMap.frontLeftMotorID);
@@ -72,11 +78,34 @@ public class AlignTargetCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+
+    if (this.valid.getDouble(0) == 0) {
+      System.out.println("No target found");
+      RobotMap.frontRightMotor.set(ControlMode.PercentOutput, 0);
+      RobotMap.frontLeftMotor.set(ControlMode.PercentOutput, 0);
+      return;
+    }
+
+    double targetDist = 24;
+
+    double skew = this.skew.getDouble(0) / 180 * Math.PI;
+    double y = this.yOffset.getDouble(0) / 180 * Math.PI;
+
+    double a = skew;
+    double r = (RobotMap.targetHeight - RobotMap.limelightHeight)
+      / tan(RobotMap.limelightAngle + y + RobotMap.crosshairYAngle);
+    double l2 = r * cos(a) - targetDist;
+    double d = r * sin(a);
+    double theta = atan2(d, l2);
+    double b = theta - a;
+    double dt = d / sin(theta);
+
+    System.out.printf("b: %+.2f, dt: %+.2f, theta: %+.2f", b, dt, theta);
    
     this.xControlLoop.updatePID(this.xOffset.getDouble(0));
     this.yControlLoop.updatePID(this.yOffset.getDouble(0));
 
-    // System.out.printf("x: %.2f; y: %.2f; out x: %.2f out y: %.2f%n",
+    // System.out.printf("x: %+.2f; y: %+.2f; out x: %+.2f out y: %+.2f%n",
     //   this.xOffset.getDouble(0),
     //   this.yOffset.getDouble(0),
     //   this.xControlLoop.getResult(),
@@ -85,13 +114,10 @@ public class AlignTargetCommand extends Command {
     double turnError = this.xControlLoop.getResult();
     double distanceError = this.yControlLoop.getResult();
 
-    RobotMap.frontRightMotor.set(ControlMode.PercentOutput, turnError + distanceError);
-    RobotMap.frontLeftMotor.set(ControlMode.PercentOutput, -turnError + distanceError);
-    System.out.printf("target l: %.2f; target r: %.2f; out l: %.2f; out r: %.2f%n",
-      -turnError + distanceError,
-      turnError + distanceError,
-      RobotMap.frontLeftMotor.getOutputCurrent(),
-      RobotMap.frontRightMotor.getOutputCurrent());
+    // RobotMap.frontRightMotor.set(ControlMode.PercentOutput, turnError + distanceError);
+    // RobotMap.frontLeftMotor.set(ControlMode.PercentOutput, -turnError + distanceError);
+    // RobotMap.frontRightMotor.set(ControlMode.PercentOutput, turnError);
+    // RobotMap.frontLeftMotor.set(ControlMode.PercentOutput, -turnError);
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -140,7 +166,7 @@ public class AlignTargetCommand extends Command {
 
     target = contours[0].center.midpoint(contours[1].center);
 
-    double targetAngle = 0; // FIXME find angle with center point;
+    double targetAngle = 0;
 
     double distance = (RobotMap.targetHeight - RobotMap.limelightHeight)
       / Math.tan(RobotMap.limelightAngle + targetAngle);

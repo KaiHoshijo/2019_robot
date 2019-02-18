@@ -17,6 +17,8 @@ public class PID {
 	private double maxOutput = 1;// defaults to 100% and -100% motor power
 	private double minOutput = -1;
 
+	private double threshold = 0.1;
+
 	private double deadband = 0;
 
 	private boolean continuous = false; // only for absolute encoders, navx, etc.
@@ -45,7 +47,10 @@ public class PID {
 
 		error = setPoint - value;
 		
-		error = checkDeadbandInput(error);
+		if (isWithinDeadband(error)) {
+			result = 0;
+			return result;
+		}
 		
 		// Sometimes a sensor wraps around continuously, such as the NavX, which flips from 180 to -180
 		// First we find the distance that we are from the setpoint,
@@ -104,6 +109,7 @@ public class PID {
 	public void setMinInput(double input) { minInput = input; }
 	public void setMaxInput(double input) { maxInput = input; }
 	public void setDeadband(double deadband) { this.deadband = deadband; }
+	public void setThreshold(double threshold) { this.threshold = threshold; }
 	public void setSetPoint(double target) { setPoint = target; }
 	public void setContinuous(boolean value) { continuous = value; }
 	
@@ -123,14 +129,14 @@ public class PID {
 		if(input < minOutput){
 			return minOutput;
 		}
+
+		// if (Math.abs(input) < this.threshold) {
+		// 	return this.threshold * Math.signum(input);
+		// }
 		return input;
 	}
 	
-	public double checkDeadbandInput(double input) {
-		if (Math.abs(input) < this.deadband) {
-			return 0;
-		} else {
-			return input;
-		}
+	public boolean isWithinDeadband(double input) {
+		return Math.abs(input) < this.deadband;
 	}
 }
